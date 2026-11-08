@@ -1,0 +1,27 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:4.3.0
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract game
+        run: |
+          unzip night_house_android_cloud_build.zip -d game
+          cd game
+          mkdir -p build
+          godot --headless --editor --quit
+          godot --headless --export-debug Android build/NightHouse.apk
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: NightHouse-APK
+          path: game/build/NightHouse.apk
